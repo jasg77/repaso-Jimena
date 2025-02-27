@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Rápida</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora Rápida</h1>
+        <div id="sumas">
+            <h2>Sumas</h2>
+            <div id="suma-problema"></div>
+            <input type="number" id="suma-respuesta" placeholder="Tu respuesta">
+            <button onclick="verificarSuma()">Verificar</button>
+            <div id="suma-resultado"></div>
+            <div id="suma-contador">Correctas: 0 | Incorrectas: 0</div>
+        </div>
+        <div id="restas">
+            <h2>Restas</h2>
+            <div id="resta-problema"></div>
+            <input type="number" id="resta-respuesta" placeholder="Tu respuesta">
+            <button onclick="verificarResta()">Verificar</button>
+            <div id="resta-resultado"></div>
+            <div id="resta-contador">Correctas: 0 | Incorrectas: 0</div>
+        </div>
+        <button onclick="generarProblemas()">Generar Nuevos Problemas</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

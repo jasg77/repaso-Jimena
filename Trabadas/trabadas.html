@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Práctica de Palabras Trabadas</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      background-color: #f0f8ff;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .word-image {
+      width: 200px;
+      height: 200px;
+      object-fit: cover;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    input[type="text"] {
+      font-size: 1.2em;
+      padding: 8px;
+      width: 80%;
+    }
+    button {
+      font-size: 1.1em;
+      padding: 8px 16px;
+      margin: 10px;
+    }
+    .feedback {
+      font-size: 1.2em;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    .scoreboard {
+      font-size: 1.2em;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Práctica de Palabras Trabadas</h1>
+    <div id="word-container">
+      <!-- Imagen de la palabra -->
+      <img id="word-image" class="word-image" src="" alt="Imagen de la palabra">
+      <!-- Botón para reproducir audio -->
+      <div>
+        <button id="audio-button">Escuchar</button>
+      </div>
+      <!-- Campo para escribir la palabra y verificarla -->
+      <div>
+        <input type="text" id="word-input" placeholder="Escribe la palabra aquí">
+        <button id="check-button">Verificar</button>
+        <span id="feedback" class="feedback"></span>
+      </div>
+    </div>
+    <!-- Controles de navegación -->
+    <div>
+      <p id="progress"></p>
+      <button id="prev-button" disabled>Anterior</button>
+      <button id="next-button">Siguiente</button>
+    </div>
+    <!-- Puntuación continua -->
+    <div class="scoreboard">
+      <p>Correctas: <span id="correct-count">0</span></p>
+      <p>Incorrectas: <span id="incorrect-count">0</span></p>
+    </div>
+  </div>
+
+  <script>
+    // Array con palabras para practicar, cada una con su imagen asociada
+    const words = [
+      { palabra: "playa", imagen: "imagenes/playa.png" },
+      { palabra: "libro", imagen: "imagenes/libro.jpg" },
+      { palabra: "perro", imagen: "imagenes/perro.jpg" },
+      { palabra: "guitarra", imagen: "imagenes/guitarra.jpg" },
+      { palabra: "carrera", imagen: "imagenes/carrera.jpg" },
+      { palabra: "flor", imagen: "imagenes/flor.jpg" },
+      { palabra: "pollo", imagen: "imagenes/pollo.jpg" },
+      { palabra: "carro", imagen: "imagenes/carro.jpg" },
+      { palabra: "arroz", imagen: "imagenes/arroz.jpg" },
+      { palabra: "sol", imagen: "imagenes/sol.jpg" },
+      { palabra: "luna", imagen: "imagenes/luna.jpg" },
+      { palabra: "estrella", imagen: "imagenes/estrella.jpg" },
+      { palabra: "murciélago", imagen: "imagenes/murcielago.jpg" },
+      { palabra: "tigre", imagen: "imagenes/tigre.jpg" },
+      { palabra: "elefante", imagen: "imagenes/elefante.jpg" },
+      { palabra: "rana", imagen: "imagenes/rana.jpg" },
+      { palabra: "barco", imagen: "imagenes/barco.jpg" },
+      { palabra: "cabra", imagen: "imagenes/cabra.jpg" },
+      { palabra: "escuela", imagen: "imagenes/escuela.jpg" },
+      { palabra: "puerta", imagen: "imagenes/puerta.jpg" },
+      { palabra: "camión", imagen: "imagenes/camion.jpg" },
+      { palabra: "avión", imagen: "imagenes/avion.jpg" },
+      { palabra: "tren", imagen: "imagenes/tren.jpg" },
+      { palabra: "bicicleta", imagen: "imagenes/bicicleta.jpg" },
+      { palabra: "helado", imagen: "imagenes/helado.jpg" },
+      { palabra: "pastel", imagen: "imagenes/pastel.jpg" },
+      { palabra: "pájaro", imagen: "imagenes/pajaro.jpg" },
+      { palabra: "manzana", imagen: "imagenes/manzana.jpg" },
+      { palabra: "zanahoria", imagen: "imagenes/zanahoria.jpg" },
+      { palabra: "cuchara", imagen: "imagenes/cuchara.jpg" },
+      { palabra: "cuchillo", imagen: "imagenes/cuchillo.jpg" },
+      { palabra: "tenedor", imagen: "imagenes/tenedor.jpg" },
+      { palabra: "silla", imagen: "imagenes/silla.jpg" },
+      { palabra: "mesa", imagen: "imagenes/mesa.jpg" },
+      { palabra: "casa", imagen: "imagenes/casa.jpg" },
+      { palabra: "periódico", imagen: "imagenes/periodico.jpg" },
+      { palabra: "música", imagen: "imagenes/musica.jpg" },
+      { palabra: "radio", imagen: "imagenes/radio.jpg" },
+      { palabra: "telefono", imagen: "imagenes/telefono.jpg" },
+      { palabra: "computadora", imagen: "imagenes/computadora.jpg" },
+      { palabra: "reloj", imagen: "imagenes/reloj.jpg" },
+      { palabra: "florero", imagen: "imagenes/florero.jpg" },
+      { palabra: "parque", imagen: "imagenes/parque.jpg" },
+      { palabra: "jardín", imagen: "imagenes/jardin.jpg" },
+      { palabra: "pelota", imagen: "imagenes/pelota.jpg" },
+      { palabra: "muñeca", imagen: "imagenes/muneca.jpg" },
+      { palabra: "abrigo", imagen: "imagenes/abrigo.jpg" },
+      { palabra: "zapato", imagen: "imagenes/zapato.jpg" },
+      { palabra: "sombrero", imagen: "imagenes/sombrero.jpg" },
+      { palabra: "corazón", imagen: "imagenes/corazon.jpg" },
+      { palabra: "atleta", imagen: "imagenes/atleta.jpg" }
+    ];
+    
+    let currentIndex = 0;
+    let correctAnswers = 0;
+    let incorrectAnswers = 0;
+    
+    // Referencias a elementos del DOM
+    const wordImage = document.getElementById('word-image');
+    const wordInput = document.getElementById('word-input');
+    const checkButton = document.getElementById('check-button');
+    const feedback = document.getElementById('feedback');
+    const audioButton = document.getElementById('audio-button');
+    const progress = document.getElementById('progress');
+    const nextButton = document.getElementById('next-button');
+    const prevButton = document.getElementById('prev-button');
+    const correctCount = document.getElementById('correct-count');
+    const incorrectCount = document.getElementById('incorrect-count');
+    
+    // Función para cargar la palabra actual
+    function loadWord(index) {
+      const wordObj = words[index];
+      // Asigna la imagen específica para cada palabra
+      wordImage.src = wordObj.imagen;
+      wordImage.alt = "Imagen de " + wordObj.palabra;
+      // Limpiar el campo de texto y la retroalimentación
+      wordInput.value = "";
+      feedback.textContent = "";
+      // Actualizar el progreso
+      progress.textContent = "Palabra " + (index + 1) + " de " + words.length;
+      // Habilitar o deshabilitar el botón "Anterior"
+      prevButton.disabled = (index === 0);
+      // Cambiar el texto del botón "Siguiente" en la última palabra
+      nextButton.textContent = (index === words.length - 1) ? "Finalizar" : "Siguiente";
+    }
+    
+    // Evento para verificar la respuesta
+    checkButton.addEventListener('click', function() {
+      const answer = wordInput.value.trim().toLowerCase();
+      const correct = words[currentIndex].palabra.toLowerCase();
+      if (answer === correct) {
+        feedback.innerHTML = '<img src="imagenes/fuegos_artificiales.jpg" alt="Fuegos Artificiales" class="word-image">';
+        correctAnswers++;
+      } else {
+        feedback.textContent = "❌ La respuesta correcta es: " + words[currentIndex].palabra;
+        incorrectAnswers++;
+      }
+          // Actualizar los contadores de correctas e incorrectas
+          correctCount.textContent = correctAnswers;
+      incorrectCount.textContent = incorrectAnswers;
+    });
+    
+    // Evento para reproducir el audio (sintetizador de voz)
+    audioButton.addEventListener('click', function() {
+      const utterance = new SpeechSynthesisUtterance(words[currentIndex].palabra);
+      utterance.lang = "es-ES";
+      speechSynthesis.speak(utterance);
+    });
+    
+    // Botón "Siguiente" para avanzar a la siguiente palabra
+    nextButton.addEventListener('click', function() {
+      if (currentIndex < words.length - 1) {
+        currentIndex++;
+        loadWord(currentIndex);
+      } else {
+        // Reiniciar el juego
+        alert("¡Has completado todas las palabras! El juego comenzará de nuevo.");
+        currentIndex = 0;
+        correctAnswers = 0;
+        incorrectAnswers = 0;
+        correctCount.textContent = correctAnswers;
+        incorrectCount.textContent = incorrectAnswers;
+        loadWord(currentIndex);
+      }
+    });
+    
+    // Botón "Anterior" para retroceder
+    prevButton.addEventListener('click', function() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        loadWord(currentIndex);
+      }
+    });
+    
+    // Inicializar con la primera palabra
+    loadWord(currentIndex);
+  </script>
+</body>
+</html>

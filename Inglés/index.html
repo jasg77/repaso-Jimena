@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repaso de Números, Colores, Estaciones y Ropa en Inglés</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Repaso de Números, Colores, Estaciones y Ropa en Inglés</h1>
+        <div id="numeros-ropa">
+            <div id="numeros">
+                <h2>Números</h2>
+                <div id="numero" style="font-size: 20px;"></div>
+                <input type="text" id="respuesta-numero" placeholder="Escribe en inglés">
+                <button onclick="verificarRespuestaNumero()">Verificar</button>
+                <div id="resultado-numero"></div>
+                <div id="contador-numero">Correctas: 0 | Incorrectas: 0</div>
+                <button onclick="generarNumero()">Generar Nuevo Número</button>
+            </div>
+            <div id="ropa">
+                <h2>Ropa</h2>
+                <img id="imagen-ropa" src="" alt="Ropa" style="width: 100px; height: 100px; margin: 0 auto;">
+                <input type="text" id="respuesta-ropa" placeholder="Escribe en inglés">
+                <button onclick="verificarRespuestaRopa()">Verificar</button>
+                <div id="resultado-ropa"></div>
+                <div id="contador-ropa">Correctas: 0 | Incorrectas: 0</div>
+                <button onclick="generarRopa()">Generar Nueva Ropa</button>
+            </div>
+        </div>
+        <div id="colores-estaciones">
+            <div id="colores">
+                <h2>Colores</h2>
+                <div id="color" style="width: 100px; height: 100px; margin: 0 auto;"></div>
+                <input type="text" id="respuesta-color" placeholder="Escribe en inglés">
+                <button onclick="verificarRespuestaColor()">Verificar</button>
+                <div id="resultado-color"></div>
+                <div id="contador-color">Correctas: 0 | Incorrectas: 0</div>
+                <button onclick="generarColor()">Generar Nuevo Color</button>
+            </div>
+            <div id="estaciones">
+                <h2>Estaciones</h2>
+                <img id="imagen-estacion" src="" alt="Estación" style="width: 100px; height: 100px; margin: 0 auto;">
+                <input type="text" id="respuesta-estacion" placeholder="Escribe en inglés">
+                <button onclick="verificarRespuestaEstacion()">Verificar</button>
+                <div id="resultado-estacion"></div>
+                <div id="contador-estacion">Correctas: 0 | Incorrectas: 0</div>
+                <button onclick="generarEstacion()">Generar Nueva Estación</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

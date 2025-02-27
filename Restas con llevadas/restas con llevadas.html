@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Práctica de Restas con Llevadas</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      background-color: #f0f8ff;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .problem {
+      font-size: 2em;
+      margin: 20px 0;
+    }
+    .problem div {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .problem input {
+      width: 30px;
+      font-size: 1em;
+      text-align: center;
+    }
+    .problem .small-input {
+      width: 10px;
+      height: 20px;
+      color: red;
+      background-color: white;
+      font-size: 1 em;
+    }
+    .problem .line {
+      border-top: 2px solid #000;
+      width: 100px;
+      margin: 10px auto;
+    }
+    .feedback {
+      font-size: 1.2em;
+      margin-top: 20px;
+    }
+    .feedback.correct {
+      color: green;
+    }
+    .feedback.incorrect {
+      color: red;
+    }
+    .scoreboard {
+      font-size: 1.2em;
+      margin-top: 20px;
+    }
+    .reminder {
+      color: red;
+      font-size: 1em;
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Práctica de Restas con Llevadas</h1>
+    <div id="problem-container" class="problem">
+      <div>
+        <span id="top-tens"></span>
+        <input type="text" id="carry-input" maxlength="1" class="small-input" style="padding: 0;">
+        <span id="top-units"></span>
+      </div>
+      <div>
+        <span>-</span>
+        <span id="carry-point" style="visibility: hidden; color: red;">•</span>
+        <span id="bottom-tens" style="margin-left: -1px;"></span>
+        <span id="bottom-units"></span>
+      </div>
+      <div class="line"></div>
+      <div>
+        <input type="text" id="result-tens" maxlength="1">
+        <input type="text" id="result-units" maxlength="1">
+      </div>
+    </div>
+    <div>
+      <button id="check-button">Solución</button>
+    </div>
+    <div>
+      <button id="prev-button" disabled>Anterior</button>
+      <button id="next-button">Siguiente</button>
+    </div>
+    <div id="feedback" class="feedback"></div>
+    <div class="scoreboard">
+      <p>Correctas: <span id="correct-count">0</span></p>
+      <p>Incorrectas: <span id="incorrect-count">0</span></p>
+    </div>
+  </div>
+
+  <script>
+    const problems = [
+  
+  { top: 92, bottom: 47 },
+  { top: 85, bottom: 38 },
+  { top: 74, bottom: 29 },
+  { top: 63, bottom: 18 },
+  { top: 56, bottom: 27 },
+  { top: 42, bottom: 25 },
+  { top: 82, bottom: 33 },
+  { top: 71, bottom: 44 },
+  { top: 62, bottom: 15 },
+  { top: 55, bottom: 28 },
+  { top: 44, bottom: 19 },
+  { top: 32, bottom: 15 },
+  { top: 22, bottom: 17 },
+  { top: 95, bottom: 49 },
+  { top: 84, bottom: 38 },
+  { top: 73, bottom: 24 },
+  { top: 60, bottom: 15 },
+  { top: 55, bottom: 29 },
+  { top: 44, bottom: 18 },
+  { top: 33, bottom: 14 },
+  { top: 22, bottom: 19 },
+  { top: 21, bottom: 15 },
+  { top: 90, bottom: 41 },
+  { top: 80, bottom: 31 },
+  { top: 70, bottom: 25 },
+  { top: 60, bottom: 17 },
+  { top: 50, bottom: 25 },
+  { top: 40, bottom: 15 },
+  { top: 30, bottom: 15 },
+  { top: 20, bottom: 11 },
+  { top: 40, bottom: 13 },
+  { top: 95, bottom: 56 },
+  { top: 85, bottom: 36 },
+  { top: 75, bottom: 27 },
+  { top: 65, bottom: 15 },
+  { top: 55, bottom: 16 },
+  { top: 45, bottom: 27 },
+  { top: 35, bottom: 18 },
+  { top: 25, bottom: 18 },
+  { top: 55, bottom: 17 },
+  { top: 65, bottom: 27 },
+  { top: 98, bottom: 49 },
+  { top: 87, bottom: 38 },
+  { top: 76, bottom: 27 },
+  { top: 65, bottom: 16 },
+  { top: 54, bottom: 16},
+  { top: 43, bottom: 17 },
+  { top: 32, bottom: 16 },
+  { top: 21, bottom: 12 },
+  { top: 49, bottom: 17 },
+];
+
+  
+    
+    let currentIndex = 0;
+    let correctAnswers = 0;
+    let incorrectAnswers = 0;
+    
+    const carryInput = document.getElementById('carry-input');
+    const topUnits = document.getElementById('top-units');
+    const topTens = document.getElementById('top-tens');
+    const bottomUnits = document.getElementById('bottom-units');
+    const bottomTens = document.getElementById('bottom-tens');
+    const carryPoint = document.getElementById('carry-point');
+    const resultTens = document.getElementById('result-tens');
+    const resultUnits = document.getElementById('result-units');
+    const feedback = document.getElementById('feedback');
+    const correctCount = document.getElementById('correct-count');
+    const incorrectCount = document.getElementById('incorrect-count');
+    const checkButton = document.getElementById('check-button');
+    const nextButton = document.getElementById('next-button');
+    const prevButton = document.getElementById('prev-button');
+    
+    function loadProblem(index) {
+      const problem = problems[index];
+      const topNumber = problem.top;
+      const bottomNumber = problem.bottom;
+      
+      topUnits.textContent = Math.floor(topNumber % 10);
+      topTens.textContent = Math.floor(topNumber / 10);
+      bottomUnits.textContent = Math.floor(bottomNumber % 10);
+      bottomTens.textContent = Math.floor(bottomNumber / 10);
+      
+      carryInput.value = '';
+      resultTens.value = '';
+      resultUnits.value = '';
+      carryPoint.style.visibility = 'hidden';
+      feedback.textContent = '';
+      prevButton.disabled = (index === 0);
+      nextButton.textContent = (index === problems.length - 1) ? 'Finalizar' : 'Siguiente';
+    }
+    
+    carryInput.addEventListener('input', function() {
+      const carryValue = carryInput.value.trim();
+      if (carryValue !== '') {
+        carryPoint.style.visibility = 'visible';
+        feedback.innerHTML = '<span class="reminder">Suma el punto</span>';
+      } else {
+        carryPoint.style.visibility = 'hidden';
+        feedback.textContent = '';
+      }
+    });
+    
+    checkButton.addEventListener('click', function() {
+      const problem = problems[currentIndex];
+      const topNumber = problem.top;
+      const bottomNumber = problem.bottom;
+      const carryValue = carryInput.value.trim();
+      const correctCarry = (topNumber % 10) < (bottomNumber % 10);
+      const resultValue = parseInt(resultTens.value + resultUnits.value, 10);
+      const correctResult = topNumber - bottomNumber;
+      
+      if (carryValue === '' && correctCarry) {
+        feedback.textContent = `❌ Incorrecto. La respuesta correcta es: ${correctResult}`;
+        feedback.classList.add('incorrect');
+        feedback.classList.remove('correct');
+        incorrectAnswers++;
+      } else if (carryValue !== '' && !correctCarry) {
+        feedback.textContent = `❌ Incorrecto. La respuesta correcta es: ${correctResult}`;
+        feedback.classList.add('incorrect');
+        feedback.classList.remove('correct');
+        incorrectAnswers++;
+      } else if (resultValue !== correctResult) {
+        feedback.textContent = `❌ Incorrecto. La respuesta correcta es: ${correctResult}`;
+        feedback.classList.add('incorrect');
+        feedback.classList.remove('correct');
+        incorrectAnswers++;
+      } else {
+        feedback.textContent = '✔️ Correcto';
+        feedback.classList.add('correct');
+        feedback.classList.remove('incorrect');
+        correctAnswers++;
+      }
+      
+      correctCount.textContent = correctAnswers;
+      incorrectCount.textContent = incorrectAnswers;
+    });
+    
+    nextButton.addEventListener('click', function() {
+      if (currentIndex < problems.length - 1) {
+        currentIndex++;
+        loadProblem(currentIndex);
+      } else {
+        alert('¡Has completado todas las restas! El juego comenzará de nuevo.');
+        currentIndex = 0;
+        correctAnswers = 0;
+        incorrectAnswers = 0;
+        correctCount.textContent = correctAnswers;
+        incorrectCount.textContent = incorrectAnswers;
+        loadProblem(currentIndex);
+      }
+    });
+    
+    prevButton.addEventListener('click', function() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        loadProblem(currentIndex);
+      }
+    });
+    
+    loadProblem(currentIndex);
+  </script>
+</body>
+</html>
