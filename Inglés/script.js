@@ -35,7 +35,7 @@ const estacionesEnIngles = {
 
 const ropaEnIngles = {
     "shirt": "camisa",
-    "pants": "pantalones",
+    "trousers": "pantalones",
     "dress": "vestido",
     "shoes": "zapatos",
     "hat": "sombrero",
